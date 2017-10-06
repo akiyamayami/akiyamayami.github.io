@@ -32,13 +32,14 @@
           center: {lat: 0, lng: -180},
           mapTypeId: 'terrain'
         });
-
+        var flightPlanCoordinates2 = [{lat: 10.853400, lng: 106.757108}];
         var flightPlanCoordinates = [
-          {lat: 10.853400, lng: 106.757108},
-          {lat: 10.853400, lng: 106.756108}
+          {lat: 10.853400, lng: 106.758108},
+          {lat: 10.853400, lng: 106.759108},
+          {lat: 10.853400, lng: 106.760108}
         ];
         var flightPath = new google.maps.Polyline({
-          path: flightPlanCoordinates,
+          path: flightPlanCoordinates2,
           geodesic: true,
           strokeColor: '#FF0000',
           strokeOpacity: 1.0,
@@ -46,6 +47,16 @@
         });
 
         flightPath.setMap(map);
+        
+        
+        for (var i = 0; i < 5; i++) {
+        	// get existing path
+          var path = flightPath.getPath();
+          // add new point
+          path.push(flightPlanCoordinates[i]);
+          // update the polyline with the updated path
+          poly.setPath(path);
+        }
       }
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1LZU7U-fPMn6RMgupnjYyQ6gADycg_ow&callback=initMap">
