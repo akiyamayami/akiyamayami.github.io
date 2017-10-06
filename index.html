@@ -53,7 +53,7 @@
         	// get existing path
           var path = flightPath.getPath();
           // add new point
-          path.push(flightPlanCoordinates[i]);
+          path.push(new google.maps.LatLng(flightPlanCoordinates[i].lat, flightPlanCoordinates[i].lng));
           // update the polyline with the updated path
           poly.setPath(path);
         }
