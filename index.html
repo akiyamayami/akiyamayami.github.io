@@ -32,7 +32,7 @@
           center: {lat: 0, lng: -180},
           mapTypeId: 'terrain'
         });
-        var flightPlanCoordinates2 = [{lat: 10.853400, lng: 106.757108}];
+        var flightPlanCoordinates2 = [{lat: 10.853400, lng: 106.757108},{lat: 10.854400, lng: 106.757108}];
         var flightPlanCoordinates = [
           {lat: 10.853400, lng: 106.758108},
           {lat: 10.853400, lng: 106.759108},
@@ -55,7 +55,7 @@
           // add new point
           path.push(new google.maps.LatLng(flightPlanCoordinates[i].lat, flightPlanCoordinates[i].lng));
           // update the polyline with the updated path
-          poly.setPath(path);
+          flightPath.setPath(path);
         }
       }
     </script>
