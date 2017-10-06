@@ -34,9 +34,9 @@
         });
         var flightPlanCoordinates2 = [{lat: 10.853400, lng: 106.757108},{lat: 10.854400, lng: 106.757108}];
         var flightPlanCoordinates = [
-          {lat: 10.853400, lng: 106.758108},
-          {lat: 10.853400, lng: 106.759108},
-          {lat: 10.853400, lng: 106.760108}
+          {lat: 10.863400, lng: 106.758108},
+          {lat: 10.873400, lng: 106.759108},
+          {lat: 10.883400, lng: 106.760108}
         ];
         var flightPath = new google.maps.Polyline({
           path: flightPlanCoordinates2,
@@ -50,6 +50,7 @@
         
         
         for (var i = 0; i < 5; i++) {
+          console.log(i);
         	// get existing path
           var path = flightPath.getPath();
           // add new point
