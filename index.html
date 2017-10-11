@@ -22,14 +22,24 @@
     <div id="map"></div>
     <script>
 
-      // This example creates a 2-pixel-wide red polyline showing the path of William
-      // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
-      // Brisbane, Australia.
 
       function initMap() {
+        var config = {
+            apiKey: "AIzaSyCCSB8kN6eqVVpsSb7_5dN7os9f8YVuEN8",
+            authDomain: "testfb-6251e.firebaseapp.com",
+            databaseURL: "https://testfb-6251e.firebaseio.com",
+            projectId: "testfb-6251e",
+            storageBucket: "testfb-6251e.appspot.com",
+            messagingSenderId: "300440751235"
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+        var data = database.ref("logs/1");
+
+        
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 5,
-          center: {lat: 0, lng: -180},
+          zoom: 12,
+          center: {lat: 10.853400, lng: 106.757108},
           mapTypeId: 'terrain'
         });
         var flightPlanCoordinates2 = [{lat: 10.853400, lng: 106.757108},{lat: 10.854400, lng: 106.757108}];
@@ -47,17 +57,20 @@
         });
 
         flightPath.setMap(map);
-        
-        
-        for (var i = 0; i < 3; i++) {
-          console.log(x[i].lat);
-        	// get existing path
-          var path = flightPath.getPath();
-          // add new point
-          path.push(new google.maps.LatLng(x[i].lat, x[i].lng));
-          // update the polyline with the updated path
-          flightPath.setPath(path);
-        }
+        var path;
+        var c;
+        var d;
+        data.on("value",function(snap){
+            c = snap.val();
+            var arr = Object.values(c);
+            d = arr.pop();
+            console.log(d);
+            path = flightPath.getPath();
+            // add new point
+            path.push(new google.maps.LatLng(d.lat, d.lng));
+            // update the polyline with the updated path
+            flightPath.setPath(path);
+        });
       }
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1LZU7U-fPMn6RMgupnjYyQ6gADycg_ow&callback=initMap">
