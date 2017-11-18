@@ -3,6 +3,10 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+    <script type="text/javascript"
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
     <title>Simple Polylines</title>
     <style>
       /* Always set the map height explicitly to define the size of the div
@@ -23,55 +27,76 @@
     <script>
 
 
-      function initMap() {
-        var config = {
-            apiKey: "AIzaSyCCSB8kN6eqVVpsSb7_5dN7os9f8YVuEN8",
-            authDomain: "testfb-6251e.firebaseapp.com",
-            databaseURL: "https://testfb-6251e.firebaseio.com",
-            projectId: "testfb-6251e",
-            storageBucket: "testfb-6251e.appspot.com",
-            messagingSenderId: "300440751235"
-        };
-        firebase.initializeApp(config);
-        var database = firebase.database();
-        var data = database.ref("logs/1");
+      var map;
+var c, d;
+var path;
+var count = false;
+var moveCenter = 0;
+var marker;
+var config = {
+	apiKey : "AIzaSyCCSB8kN6eqVVpsSb7_5dN7os9f8YVuEN8",
+	authDomain : "testfb-6251e.firebaseapp.com",
+	databaseURL : "https://testfb-6251e.firebaseio.com",
+	projectId : "testfb-6251e",
+	storageBucket : "testfb-6251e.appspot.com",
+	messagingSenderId : "300440751235"
+};
+firebase.initializeApp(config);
+var database = firebase.database();
+function initMap() {
+	proposalID = 47;
+	map = new google.maps.Map(document.getElementById("map"), {
+		zoom : 16,
+		center: {lat: 0, lng: -180},
+		mapTypeId : "terrain"
+	});
+	var data = database.ref("proposal/" + proposalID);
+	var flightPath = new google.maps.Polyline({
+		geodesic : true,
+		strokeColor : "#FF0000",
+		strokeOpacity : 5.0,
+		strokeWeight : 10
+	});
+	data.on("value", function(snap) {
+		c = snap.val();
+		if (c != null && !count) {
+			var arr = Object.values(c);
+			path = flightPath.getPath();
+			for ( var key in arr) {
+				path.push(new google.maps.LatLng(arr[key].lat, arr[key].lng));
+			}
+			var lastAdress = arr.pop();
+			map.setCenter(new google.maps.LatLng(lastAdress.lat,
+							lastAdress.lng));
+			flightPath.setMap(map);
+			flightPath.setPath(path);
+			count = true;
+			marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lastAdress.lat, lastAdress.lng),
+                title:"Your are here"
+            });
+            marker.setMap(map);
+		} else {
+			if (c != null) {
+				moveCenter++;
+				var arr = Object.values(c);
+				console.log(arr);
+				path = flightPath.getPath();
+				d = arr.pop();
+				path = flightPath.getPath();
+				var myLatlng = new google.maps.LatLng(d.lat, d.lng);
+				path.push(myLatlng);
+				flightPath.setPath(path);
+				if (moveCenter == 5) {
+					map.setCenter(new google.maps.LatLng(d.lat, d.lng));
+					moveCenter = 0;
+				}
+				marker.setPosition(myLatlng);
+			}
+		}
+	});
+}
 
-        
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 12,
-          center: {lat: 10.853400, lng: 106.757108},
-          mapTypeId: 'terrain'
-        });
-        var flightPlanCoordinates2 = [{lat: 10.853400, lng: 106.757108},{lat: 10.854400, lng: 106.757108}];
-        var x = [
-          {lat: 10.863400, lng: 106.758108},
-          {lat: 10.873400, lng: 106.759108},
-          {lat: 10.983400, lng: 106.860108}
-        ];
-        var flightPath = new google.maps.Polyline({
-          path: flightPlanCoordinates2,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-
-        flightPath.setMap(map);
-        var path;
-        var c;
-        var d;
-        data.on("value",function(snap){
-            c = snap.val();
-            var arr = Object.values(c);
-            d = arr.pop();
-            console.log(d);
-            path = flightPath.getPath();
-            // add new point
-            path.push(new google.maps.LatLng(d.lat, d.lng));
-            // update the polyline with the updated path
-            flightPath.setPath(path);
-        });
-      }
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1LZU7U-fPMn6RMgupnjYyQ6gADycg_ow&callback=initMap">
     </script>
