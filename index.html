@@ -80,11 +80,12 @@ function initMap() {
 			if (c != null) {
 				moveCenter++;
 				var arr = Object.values(c);
-				console.log(arr);
+				
 				path = flightPath.getPath();
 				d = arr.pop();
 				path = flightPath.getPath();
 				var myLatlng = new google.maps.LatLng(d.lat, d.lng);
+				console.log(myLatlng);
 				path.push(myLatlng);
 				flightPath.setPath(path);
 				if (moveCenter == 5) {
