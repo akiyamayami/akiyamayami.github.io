@@ -12,18 +12,22 @@
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
       #map {
-        height: 100%;
+        height: 95% ;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
         margin: 0;
         padding: 0;
+
       }
+      
     </style>
   </head>
   <body>
-    <div id="map"></div>
+  	<button id="btnClear">clear</button>
+    <div id="map">
+    </div>
     <script>
 
 
@@ -43,14 +47,15 @@ var config = {
 };
 firebase.initializeApp(config);
 var database = firebase.database();
+var data;
 function initMap() {
-	proposalID = 48;
+	proposalID = 41;
 	map = new google.maps.Map(document.getElementById("map"), {
 		zoom : 16,
 		center: {lat: 0, lng: -180},
 		mapTypeId : "terrain"
 	});
-	var data = database.ref("proposal/" + proposalID);
+	data = database.ref("proposal/" + proposalID);
 	var flightPath = new google.maps.Polyline({
 		geodesic : true,
 		strokeColor : "#FF0000",
@@ -63,41 +68,66 @@ function initMap() {
 			var arr = Object.values(c);
 			path = flightPath.getPath();
 			for ( var key in arr) {
-				path.push(new google.maps.LatLng(arr[key].lat, arr[key].lng));
+				if(arr[key].lat != "1000.000000" && arr[key].lng != "1000.000000")
+				{
+					path.push(new google.maps.LatLng(arr[key].lat, arr[key].lng));
+				}
 			}
 			var lastAdress = arr.pop();
-			map.setCenter(new google.maps.LatLng(lastAdress.lat,
+				map.setCenter(new google.maps.LatLng(lastAdress.lat,
 							lastAdress.lng));
-			flightPath.setMap(map);
-			flightPath.setPath(path);
-			count = true;
-			marker = new google.maps.Marker({
-                position: new google.maps.LatLng(lastAdress.lat, lastAdress.lng),
-                title:"Your are here"
-            });
-            marker.setMap(map);
+				flightPath.setMap(map);
+				flightPath.setPath(path);
+				count = true;
+				marker = new google.maps.Marker({
+	                position: new google.maps.LatLng(lastAdress.lat, lastAdress.lng),
+	                title:"Your are here"
+	        });
+	        marker.setMap(map);
 		} else {
 			if (c != null) {
 				moveCenter++;
 				var arr = Object.values(c);
-				
 				path = flightPath.getPath();
 				d = arr.pop();
-				path = flightPath.getPath();
-				var myLatlng = new google.maps.LatLng(d.lat, d.lng);
-				console.log(myLatlng);
-				path.push(myLatlng);
-				flightPath.setPath(path);
-				if (moveCenter == 5) {
-					map.setCenter(new google.maps.LatLng(d.lat, d.lng));
-					moveCenter = 0;
+				if(d.lat != "1000.000000" && d.lng != "1000.000000")
+				{
+					path = flightPath.getPath();
+					var myLatlng = new google.maps.LatLng(d.lat, d.lng);
+					console.log(myLatlng);
+					path.push(myLatlng);
+					flightPath.setPath(path);
+					if (moveCenter == 5) {
+						map.setCenter(new google.maps.LatLng(d.lat, d.lng));
+						moveCenter = 0;
+					}
+					marker.setPosition(myLatlng);
 				}
-				marker.setPosition(myLatlng);
+				else{
+					console.log("Not location yet");
+				}
+				
 			}
 		}
 	});
 }
 
+    </script>
+    <script type="text/javascript">
+    	$(document).ready(function(){
+    		$("#btnClear").click(function(){
+    			data.remove(function(error){
+    				if(error != null){
+    					alert(error);
+    				}
+    				else{
+    					alert("delete success, click ok to reload page");
+						location.reload();
+    					
+    				}
+    			})
+    		})
+    	})
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1LZU7U-fPMn6RMgupnjYyQ6gADycg_ow&callback=initMap">
     </script>
